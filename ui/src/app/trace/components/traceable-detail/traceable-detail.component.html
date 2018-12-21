@@ -1,0 +1,14 @@
+<div fxLayout="column">
+  <h1>{{ traceable.name }}</h1>
+  <p>{{ traceable.description }}</p>
+
+  <div fxLayout="column">
+    <div *ngFor="let transfer of transfers" fxLayout="column">
+      <div fxLayout="row">
+        <span fxFlex>{{ transfer.sender }} > {{ transfer.receiver }}</span>
+        <span>{{ transfer.timestamp | date }}</span>
+      </div>
+      <span>{{ transfer.observations }}</span>
+    </div>
+  </div>
+</div>

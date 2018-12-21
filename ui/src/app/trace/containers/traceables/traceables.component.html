@@ -1,0 +1,13 @@
+<div fxLayout="row">
+  <ht-traceable-list
+    fxFlex="30"
+    [traceables]="traceables$ | async"
+    (traceableSelected)="traceableSelected($event)"
+  ></ht-traceable-list>
+  <ht-traceable-detail
+    fxFlex="60"
+    *ngIf="(selectedTraceable$ | async)"
+    [traceable]="selectedTraceable$ | async"
+    [transfers]="selectedTraceableTransfers$ | async"
+  ></ht-traceable-detail>
+</div>
