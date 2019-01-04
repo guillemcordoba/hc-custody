@@ -1,14 +1,39 @@
-<div fxLayout="column">
-  <h1>{{ traceable.name }}</h1>
-  <p>{{ traceable.description }}</p>
+<div fxLayout="column" fxLayoutGap="8px">
+  <div fxLayout="row" fxLayoutAlign="center center">
+    <div fxLayout="column" fxFlex>
+      <h2>{{ traceable.name }}</h2>
+      <span>Description: {{ traceable.description }}</span>
+      <span *ngIf="traceable.owner">Owner: {{ traceable.owner }}</span>
+      <span>Current holder: {{ traceable.holder }}</span>
+    </div>
 
-  <div fxLayout="column">
-    <div *ngFor="let transfer of transfers" fxLayout="column">
-      <div fxLayout="row">
-        <span fxFlex>{{ transfer.sender }} > {{ transfer.receiver }}</span>
-        <span>{{ transfer.timestamp | date }}</span>
-      </div>
-      <span>{{ transfer.observations }}</span>
+    <div fxLayout="column" fxLayoutGap="8px">
+      <button mat-raised-button (click)="initTransfer.emit()" color="secondary">
+        Transfer item
+      </button>
+      <button
+        mat-raised-button
+        (click)="initiateTransferRequest()"
+        color="secondary"
+      >
+        Request item transfer
+      </button>
     </div>
   </div>
+
+  <h3>Trace</h3>
+  <mat-list>
+    <ng-container *ngFor="let transfer of transfers; let idx = index">
+      <mat-divider *ngIf="idx !== 0"></mat-divider>
+      <mat-list-item>
+        <div matLine fxLayout="row">
+          <span fxFlex>{{ transfer.sender }} -> {{ transfer.receiver }}</span>
+          <span>{{ transfer.timestamp | date }}</span>
+        </div>
+        <span *ngIf="transfer.observations" matLine>
+          Observations: {{ transfer.observations }}
+        </span>
+      </mat-list-item>
+    </ng-container>
+  </mat-list>
 </div>

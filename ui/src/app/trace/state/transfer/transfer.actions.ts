@@ -5,6 +5,10 @@ import { Transfer } from '../trace.model';
 export enum TransferActionTypes {
   LoadTransfers = '[Transfer] Load Transfers',
   LoadTransfersSuccess = '[Transfer] Load Transfers Success',
+  CreateTransfer = '[Transfer] Create New Transfer',
+  RejectTransfer = '[Transfer] Reject Transfer',
+  AcceptTransfer = '[Transfer] Accept Transfer',
+
   AddTransfer = '[Transfer] Add Transfer',
   UpsertTransfer = '[Transfer] Upsert Transfer',
   AddTransfers = '[Transfer] Add Transfers',
@@ -26,6 +30,24 @@ export class LoadTransfersSuccess implements Action {
   readonly type = TransferActionTypes.LoadTransfersSuccess;
 
   constructor(public payload: { transfers: Transfer[] }) {}
+}
+
+export class CreateTransfer implements Action {
+  readonly type = TransferActionTypes.CreateTransfer;
+
+  constructor(public payload: { transfer: Transfer }) {}
+}
+
+export class RejectTransfer implements Action {
+  readonly type = TransferActionTypes.RejectTransfer;
+
+  constructor(public payload: { transferId: string }) {}
+}
+
+export class AcceptTransfer implements Action {
+  readonly type = TransferActionTypes.AcceptTransfer;
+
+  constructor(public payload: { transferId: string }) {}
 }
 
 export class AddTransfer implements Action {
@@ -83,6 +105,9 @@ export class ClearTransfers implements Action {
 export type TransferActions =
   | LoadTransfers
   | LoadTransfersSuccess
+  | CreateTransfer
+  | AcceptTransfer
+  | RejectTransfer
   | AddTransfer
   | UpsertTransfer
   | AddTransfers

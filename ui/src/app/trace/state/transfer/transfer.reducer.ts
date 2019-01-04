@@ -1,7 +1,6 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { TransferActions, TransferActionTypes } from './transfer.actions';
 import { Transfer } from '../trace.model';
-import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 export interface TransferState extends EntityState<Transfer> {
   // additional entities state properties
@@ -63,19 +62,3 @@ export function reducer(
     }
   }
 }
-
-// export const selectTransfers = createFeatureSelector<TransferState>('transfer');
-
-export const {
-  selectIds,
-  selectEntities,
-  selectAll,
-  selectTotal
-} = adapter.getSelectors();
-
-export const selectByTraceableId = (traceableId: string) =>
-  createSelector(
-    selectAll,
-    transfers =>
-      transfers.filter(transfer => transfer.traceableId === traceableId)
-  );

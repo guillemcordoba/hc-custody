@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Traceable, Transfer } from '../../state/trace.model';
 
 @Component({
@@ -13,7 +13,12 @@ export class TraceableDetailComponent implements OnInit {
   @Input()
   transfers: Transfer[];
 
+  @Output()
+  initTransfer = new EventEmitter<void>();
+
   constructor() {}
 
   ngOnInit() {}
+
+  initiateTransferRequest() {}
 }

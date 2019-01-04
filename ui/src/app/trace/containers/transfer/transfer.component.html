@@ -1,0 +1,24 @@
+<ng-container *ngIf="(transfer$ | async) && !editingMode">
+  <ht-transfer-detail
+    [transfer]="transfer$ | async"
+    (modifyTransfer)="toggleEditing()"
+    (acceptTransfer)="acceptTransfer()"
+    (rejectTransfer)="rejectTransfer()"
+  ></ht-transfer-detail>
+</ng-container>
+
+<ng-container *ngIf="!(transfer$ | async) && editingMode">
+  <ht-transfer-form
+    [transfer]="buildNewTransfer()"
+    (saveTransfer)="createTransfer($event)"
+    (discardChanges)="toggleEditing()"
+  ></ht-transfer-form>
+</ng-container>
+
+<ng-container *ngIf="(transfer$ | async) && editingMode">
+  <ht-transfer-form
+    [transfer]="transfer$ | async"
+    (saveTransfer)="updateTransfer($event)"
+    (discardChanges)="toggleEditing()"
+  ></ht-transfer-form>
+</ng-container>

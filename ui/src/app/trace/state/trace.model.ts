@@ -13,9 +13,17 @@ export interface Transfer {
   id: string;
   sender: string;
   receiver: string;
-  timestamp: number;
+  state: TransferState;
+
+  timestamp?: number;
 
   traceableId: string;
 
   observations: string;
+}
+
+export enum TransferState {
+  AWAITING_CONFIRMATION,
+  PENDING_ANSWER,
+  COMPLETED
 }
