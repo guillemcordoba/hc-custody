@@ -1,9 +1,0 @@
-<mat-nav-list>
-  <a
-    mat-list-item
-    *ngFor="let traceable of traceables"
-    (click)="traceableSelected.emit(traceable.id)"
-  >
-    {{ traceable.name }}
-  </a>
-</mat-nav-list>

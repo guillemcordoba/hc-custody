@@ -1,22 +1,20 @@
 // This test file uses the tape testing framework.
 // To learn more, go here: https://github.com/substack/tape
-const test = require('tape');
-const Container = require('@holochain/holochain-nodejs');
+const { Config, Scenario } = require("@holochain/holochain-nodejs")
+Scenario.setTape(require("tape"))
 
-// instantiate an app from the DNA JSON bundle
-const app = Container.loadAndInstantiate("dist/bundle.json")
+const dnaPath = "./dist/hc-custody.dna.json"
+const agentAlice = Config.agent("alice")
+const dna = Config.dna(dnaPath)
+const instanceAlice = Config.instance(agentAlice, dna)
+const scenario = new Scenario([instanceAlice])
 
-// activate the new instance
-app.start()
-
-test('description of example test', (t) => {
+scenario.runTape("description of example test", async (t, { alice }) => {
   // Make a call to a Zome function
-  // indicating the capability and function, and passing it an input
-  // const result = app.call("zome-name", "capability-name", "function-name", {})
+  // indicating the function, and passing it an input
+  const addr = alice.call("my_zome", "create_my_entry", {"entry" : {"content":"sample content"}})
+  const result = alice.call("my_zome", "get_my_entry", {"address": addr.Ok})
 
   // check for equality of the actual and expected results
-  // t.equal(result, "expected result!")
-
-  // ends this test
-  t.end()
+  t.deepEqual(result, { Ok: { App: [ 'my_entry', '{"content":"sample content"}' ] } })
 })
