@@ -9,74 +9,45 @@ extern crate serde_json;
 extern crate holochain_core_types_derive;
 
 use hdk::{
-    entry_definition::ValidatingEntryType,
-    error::ZomeApiResult,
-};
-use hdk::holochain_core_types::{
-    cas::content::Address,
-    entry::Entry,
-    dna::entry_types::Sharing,
-    error::HolochainError,
-    json::JsonString,
-    validation::EntryValidationData
+  entry_definition::ValidatingEntryType,
+  error::ZomeApiResult,
+  holochain_core_types::{
+    cas::content::Address, dna::entry_types::Sharing, entry::Entry, error::HolochainError,
+    json::JsonString, validation::EntryValidationData,
+  },
 };
 
-// see https://developer.holochain.org/api/0.0.17-alpha2/hdk/ for info on using the hdk library
-
-// This is a sample zome that defines an entry type "MyEntry" that can be committed to the
-// agent's chain via the exposed function create_my_entry
-
-#[derive(Serialize, Deserialize, Debug, DefaultJson,Clone)]
-pub struct MyEntry {
-    content: String,
-}
-
-pub fn handle_create_my_entry(entry: MyEntry) -> ZomeApiResult<Address> {
-    let entry = Entry::App("my_entry".into(), entry.into());
-    let address = hdk::commit_entry(&entry)?;
-    Ok(address)
-}
-
-pub fn handle_get_my_entry(address: Address) -> ZomeApiResult<Option<Entry>> {
-    hdk::get_entry(&address)
-}
-
-fn definition() -> ValidatingEntryType {
-    entry!(
-        name: "my_entry",
-        description: "this is a same entry defintion",
-        sharing: Sharing::Public,
-        validation_package: || {
-            hdk::ValidationPackageDefinition::Entry
-        },
-
-        validation: | _validation_data: hdk::EntryValidationData<MyEntry>| {
-            Ok(())
-        }
-    )
-}
+pub mod handlers;
+pub mod trace;
+pub mod transfer;
 
 define_zome! {
-    entries: [
-       definition()
-    ]
+  entries: [
+    transfer::sender_definition(),
+    transfer::receiver_definition(),
+    trace::definition()
+  ]
 
-    genesis: || { Ok(()) }
+  genesis: || { Ok(()) }
 
-    functions: [
-        create_my_entry: {
-            inputs: |entry: MyEntry|,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: handle_create_my_entry
-        }
-        get_my_entry: {
-            inputs: |address: Address|,
-            outputs: |result: ZomeApiResult<Option<Entry>>|,
-            handler: handle_get_my_entry
-        }
-    ]
+  receive: |from, msg_json| {
+    handlers::handle_receive_transfer_request(from, JsonString::from_json(&msg_json))
+  }
 
-    traits: {
-        hc_public [create_my_entry,get_my_entry]
+  functions: [
+    request_transfer: {
+      inputs: |from_agent: Address, request: handlers::TransferRequest|,
+      outputs: |result: ZomeApiResult<Address>|,
+      handler: handlers::handle_request_transfer
     }
+    create_object_trace: {
+      inputs: |object_address: Address|,
+      outputs: |result: ZomeApiResult<Address>|,
+      handler: handlers::handle_create_object_trace
+    }
+  ]
+
+  traits: {
+    hc_public [create_my_entry,get_my_entry]
+  }
 }
