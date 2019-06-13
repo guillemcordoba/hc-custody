@@ -17,9 +17,10 @@ use hdk::{
   },
 };
 
-pub mod handlers;
 pub mod trace;
 pub mod transfer;
+pub mod sender;
+pub mod receiver;
 
 define_zome! {
   entries: [
@@ -31,23 +32,23 @@ define_zome! {
   genesis: || { Ok(()) }
 
   receive: |from, msg_json| {
-    handlers::handle_receive_transfer_request(from, JsonString::from_json(&msg_json))
+    receiver::handle_receive_transfer_request(from, JsonString::from_json(&msg_json))
   }
 
   functions: [
     request_transfer: {
-      inputs: |from_agent: Address, request: handlers::TransferRequest|,
+      inputs: |to_agent: Address, transfer_info: transfer::TransferInfo|,
       outputs: |result: ZomeApiResult<Address>|,
-      handler: handlers::handle_request_transfer
+      handler: sender::handle_request_transfer
     }
     create_object_trace: {
       inputs: |object_address: Address|,
       outputs: |result: ZomeApiResult<Address>|,
-      handler: handlers::handle_create_object_trace
+      handler: trace::handle_create_object_trace
     }
   ]
 
   traits: {
-    hc_public [create_my_entry,get_my_entry]
+    hc_public [request_transfer,create_object_trace]
   }
 }

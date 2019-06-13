@@ -49,3 +49,9 @@ pub fn definition() -> ValidatingEntryType {
     ]
   )
 }
+
+
+pub fn handle_create_object_trace(object_address: Address) -> ZomeApiResult<Address> {
+  let trace_entry = Trace::entry(object_address);
+  hdk::commit_entry(&trace_entry)
+}

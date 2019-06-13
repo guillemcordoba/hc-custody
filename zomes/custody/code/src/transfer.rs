@@ -9,26 +9,48 @@ use hdk::{
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq)]
 pub struct GeoLocation {
-  latitude: f64,
-  longitude: f64,
+  pub latitude: f64,
+  pub longitude: f64,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, DefaultJson, PartialEq)]
+pub struct TransferInfo {
+  pub object_address: Address,
+  pub description: String,
+  pub timestamp: u128,
+  pub location: GeoLocation,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq)]
 pub struct Transfer {
-  sender_agent: Address,
-  receiver_agent: Address,
-  object_address: Address,
-  previous_transfer: Address,
-  description: String,
-  timestamp: u128,
-  location: GeoLocation,
+  pub info: TransferInfo,
+
+  pub sender_agent: Address,
+  pub receiver_agent: Address,
+  pub previous_transfer: Address,
+}
+
+impl Transfer {
+  pub fn new(
+    info: TransferInfo,
+    sender_agent: Address,
+    receiver_agent: Address,
+    previous_transfer: Address,
+  ) -> Transfer {
+    Transfer {
+      info: info.to_owned(),
+      sender_agent: sender_agent.to_owned(),
+      receiver_agent: receiver_agent.to_owned(),
+      previous_transfer: previous_transfer.to_owned(),
+    }
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq)]
 pub struct SignedTransfer {
-  transfer: Transfer,
-  own_signature: Signature,
-  peer_signature: Signature,
+  pub transfer: Transfer,
+  pub own_signature: Signature,
+  pub peer_signature: Signature,
 }
 
 pub fn sender_definition() -> ValidatingEntryType {
