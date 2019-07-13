@@ -24,8 +24,7 @@ pub mod receiver;
 
 define_zome! {
   entries: [
-    transfer::sender_definition(),
-    transfer::receiver_definition(),
+    transfer::definition(),
     trace::definition()
   ]
 
