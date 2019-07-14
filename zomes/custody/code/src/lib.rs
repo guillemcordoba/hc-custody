@@ -4,9 +4,10 @@ extern crate hdk;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
-extern crate holochain_core_types_derive;
+extern crate holochain_json_derive;
 
 use hdk::{
   entry_definition::ValidatingEntryType,
@@ -24,7 +25,6 @@ pub mod receiver;
 
 define_zome! {
   entries: [
-    transfer::definition(),
     trace::definition()
   ]
 
@@ -40,14 +40,21 @@ define_zome! {
       outputs: |result: ZomeApiResult<Address>|,
       handler: sender::handle_request_transfer
     }
+
     create_object_trace: {
       inputs: |object_address: Address|,
       outputs: |result: ZomeApiResult<Address>|,
       handler: trace::handle_create_object_trace
     }
+
+    get_object_trace: {
+      inputs: |object_address: Address|,
+      outputs: |result: ZomeApiResult<Option<EntryHistory>>|,
+      handler: trace::handle_get_object_trace
+    }
   ]
 
   traits: {
-    hc_public [request_transfer,create_object_trace]
+    hc_public [request_transfer,create_object_trace, get_object_trace]
   }
 }

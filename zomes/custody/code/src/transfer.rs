@@ -1,10 +1,15 @@
+use hdk::holochain_json_api::{error::JsonError, json::JsonString};
 use hdk::{
   entry_definition::ValidatingEntryType,
   error::ZomeApiResult,
   holochain_core_types::{
-    cas::content::Address, dna::entry_types::Sharing, entry::Entry, error::HolochainError,
-    json::JsonString, signature::Signature, validation::EntryValidationData,
+    dna::entry_types::Sharing,
+    entry::Entry,
+    error::HolochainError,
+    signature::{Provenance, Signature},
+    validation::EntryValidationData,
   },
+  holochain_persistence_api::cas::content::Address,
 };
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq)]
@@ -24,40 +29,14 @@ pub struct TransferInfo {
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq)]
 pub struct Transfer {
   pub info: TransferInfo,
-
-  pub sender_agent: Address,
-  pub receiver_agent: Address,
-  pub previous_transfer: Address,
+  pub provenance: Provenance,
 }
 
 impl Transfer {
-  pub fn new(
-    info: TransferInfo,
-    sender_agent: Address,
-    receiver_agent: Address,
-    previous_transfer: Address,
-  ) -> Transfer {
+  pub fn new(info: TransferInfo, provenance: Provenance) -> Transfer {
     Transfer {
       info: info.to_owned(),
-      sender_agent: sender_agent.to_owned(),
-      receiver_agent: receiver_agent.to_owned(),
-      previous_transfer: previous_transfer.to_owned(),
+      provenance: provenance.to_owned(),
     }
   }
-}
-
-pub fn definition() -> ValidatingEntryType {
-  entry!(
-    name: "transfer",
-    description: "transfer entry that both sender and receiver commit to their source chain",
-    sharing: Sharing::Public,
-    validation_package: || {
-      hdk::ValidationPackageDefinition::ChainFull
-    },
-
-    validation: | _validation_data: hdk::EntryValidationData<Transfer>| {
-      Ok(())
-    },
-    links: []
-  )
 }
